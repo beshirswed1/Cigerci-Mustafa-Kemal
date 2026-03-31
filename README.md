@@ -73,30 +73,34 @@ Make sure you have Node.js and npm (or yarn/pnpm/bun) installed.
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/esgili-restoran.git](https://github.com/your-username/esgili-restoran.git)
-   cd esgili-restoran
-Install dependencies:
+   git clone https://github.com/beshirswed1/Cigerci-Mustafa-Kemal.git
+   cd Cigerci-Mustafa-Kemal
+   ```
 
-Bash
-npm install
-# or yarn install
+2. **Install dependencies:**
+   ```bash
+   npm install
+   # or yarn install
+   ```
 
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   # or yarn dev
+   ```
 
+4. **Open the app:**
+   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
 
-Bash
-npm run dev
-# or yarn dev
-Open the app:
-Navigate to http://localhost:3000 in your browser.
+---
 
-👨‍💻 Developer
-Proudly developed by [Beshir]
+## 👨‍💻 Developer
+Proudly developed by **Beshir**
 
-💼 Portfolio: beshir.vercel.app
+💼 **Portfolio:** [beshir.vercel.app](https://beshir.vercel.app)  
+🚀 **Role:** Full-Stack Developer & UI/UX Architect
 
-🚀 Role: Full-Stack Developer & UI/UX Architect
-
-"Building not just websites, but digital masterpieces."
+*"Building not just websites, but digital masterpieces."*
 
 <p align="center">
 <i>If you like this project, please leave a ⭐️!</i>
