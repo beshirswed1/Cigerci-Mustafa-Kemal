@@ -1,6 +1,6 @@
 <div align="center">
   
-  # 🍽️ Eşgili Restoran | Premium Web Application 🚀
+  # 🍽️ Ciğerci Mustafa Kemal | Premium Web Application 🚀
   
   <p align="center">
     <strong>A legendary, full-stack restaurant management system and digital menu built with cutting-edge web technologies.</strong>
@@ -27,7 +27,7 @@
 
 ## 📖 About The Project
 
-**Eşgili Restoran** is an ultra-modern, fully responsive web application designed to elevate the dining experience. Built for a prominent restaurant in Gaziantep, this project features a real-time digital menu, an advanced shopping cart, and a highly secure, luxurious Admin Dashboard for live management. 
+**Ciğerci Mustafa Kemal** is an ultra-modern, fully responsive web application designed to elevate the dining experience. Built for a prominent restaurant in Gaziantep, this project features a real-time digital menu, an advanced shopping cart, and a highly secure, luxurious Admin Dashboard for live management. 
 
 It is engineered with **Advanced SEO (JSON-LD, Open Graph)** to ensure top-tier visibility on Google and social media platforms.
 
