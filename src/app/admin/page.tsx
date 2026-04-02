@@ -2,12 +2,14 @@
 
 import { useAppSelector } from "@/store/hooks";
 const useDynamic = () => useAppSelector((s) => s.restaurant.info);
-import { Utensils, Folders, FileText, Sparkles, ArrowRight, Activity } from "lucide-react";
+import { Utensils, Folders, FileText, Sparkles, ArrowRight, Activity, ClipboardList } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
   const info = useDynamic();
+  const orders = useAppSelector(s => s.orders.items);
+  const pendingOrders = orders.filter(o => o.status === "pending").length;
   const [time, setTime] = useState("");
 
   useEffect(() => {
@@ -22,6 +24,15 @@ export default function AdminDashboard() {
 
   // إضافة تدرجات لونية فخمة لكل كرت
   const cards = [
+    {
+      title: "Sipariş Yönetimi",
+      icon: ClipboardList,
+      href: "/admin/orders",
+      desc: "Gelen siparişleri görüntüle, onayla veya iptal et.",
+      color: "from-red-500 to-rose-600",
+      glow: "group-hover:shadow-red-500/20",
+      badge: pendingOrders > 0 ? `${pendingOrders} Yeni` : undefined
+    },
     {
       title: "Ürün Yönetimi",
       icon: Utensils,
@@ -108,9 +119,16 @@ export default function AdminDashboard() {
                   <card.icon className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-md" />
                 </div>
 
-                {/* سهم الدخول */}
-                <div className="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-white group-hover:shadow-md transition-all duration-300 transform group-hover:translate-x-1 group-hover:-translate-y-1">
-                  <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-900 transition-colors" />
+                {/* سهم الدخول والبادج */}
+                <div className="flex items-center gap-2">
+                  {card.badge && (
+                    <span className="bg-red-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full shadow-sm animate-pulse">
+                      {card.badge}
+                    </span>
+                  )}
+                  <div className="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-white group-hover:shadow-md transition-all duration-300 transform group-hover:translate-x-1 group-hover:-translate-y-1">
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-gray-900 transition-colors" />
+                  </div>
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 {
-  "name": "esgili",
-  "version": "0.1.0",
+  "name": "cigerci-mustafa-kemal",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

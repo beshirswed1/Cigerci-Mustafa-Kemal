@@ -2,6 +2,26 @@
 // QR MENU TEMPLATE SYSTEM - Type Definitions
 // ==========================================
 
+export type OrderStatus = "pending" | "completed" | "cancelled";
+
+export interface OrderItem {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
+export interface Order {
+  id: string;
+  items: OrderItem[];
+  tableNumber: string;
+  note: string;
+  totalPrice: number;
+  status: OrderStatus;
+  createdAt: number; // timestamp
+}
+
 export interface MenuItem {
   id: string
   name: string

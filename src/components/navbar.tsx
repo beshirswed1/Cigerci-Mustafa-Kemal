@@ -28,13 +28,13 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg shadow-black/5"
-          : "bg-transparent"
+        ? "bg-background/95 backdrop-blur-md border-b border-border shadow-lg shadow-black/5"
+        : "bg-transparent"
         }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-3 group">
+        <a href="/" className="flex items-center gap-3 group">
           <div className="relative h-11 w-11 overflow-hidden rounded-full border-2 border-primary/30 transition-transform duration-300 group-hover:scale-110">
             <Image
               src="/logo.jpeg"
@@ -47,12 +47,12 @@ export function Navbar() {
             <span className="font-serif text-lg font-bold leading-tight transition-colors duration-300"
               style={{ color: scrolled ? "var(--foreground)" : "white" }}
             >
-              {info.name}
+              Ciğerci Mustafa Kemal
             </span>
             <span className="text-xs leading-tight transition-colors duration-300"
               style={{ color: scrolled ? "var(--muted-foreground)" : "rgba(255,255,255,0.7)" }}
             >
-              {info.slogan}
+              🔥 Gaziantep'in En Lezzetli Ciğeri
             </span>
           </div>
         </a>
@@ -94,8 +94,8 @@ export function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105 ${scrolled
-                  ? "border-border text-foreground hover:bg-secondary"
-                  : "border-white/30 text-white hover:bg-white/10"
+                ? "border-border text-foreground hover:bg-secondary"
+                : "border-white/30 text-white hover:bg-white/10"
                 }`}
             >
               <MapPin className="h-4 w-4" />

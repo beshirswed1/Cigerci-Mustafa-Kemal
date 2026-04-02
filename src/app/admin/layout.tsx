@@ -5,8 +5,12 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Utensils, Folders, FileText, LogOut, Loader2 } from "lucide-react";
-import { useAppSelector } from "@/store/hooks";
+import { LayoutDashboard, Utensils, Folders, FileText, LogOut, Loader2, ClipboardList } from "lucide-react";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { db } from "@/lib/firebase";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { setOrders } from "@/store/slices/ordersSlice";
+import type { Order } from "@/types";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -14,11 +18,47 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const info = useAppSelector((s) => s.restaurant.info);
+  const orders = useAppSelector((s) => s.orders.items);
+  const pendingOrders = orders.filter(o => o.status === "pending").length;
 
   const handleLogout = async () => {
     await signOut(auth);
     router.push("/");
   };
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    let unsubOrders: () => void;
+
+    if (user) {
+      const ordersQuery = query(collection(db, "orders"), orderBy("createdAt", "desc"));
+      unsubOrders = onSnapshot(ordersQuery, (orderSnap) => {
+        const allOrders: Order[] = [];
+        orderSnap.forEach(d => {
+          const data = d.data();
+          // Explicitly convert Timestamp to a primitive number to satisfy Redux serializability.
+          // By not spreading data entirely we ensure no hidden non-serializable prototype properties slip through.
+          allOrders.push({ 
+            id: d.id, 
+            tableNumber: data.tableNumber,
+            note: data.note,
+            totalPrice: data.totalPrice,
+            status: data.status,
+            items: data.items,
+            createdAt: data.createdAt?.toMillis ? data.createdAt.toMillis() : Date.now() 
+          } as Order);
+        });
+        dispatch(setOrders(allOrders));
+      }, (error) => {
+        console.error("Orders sync error:", error);
+      });
+    }
+
+    return () => {
+      if (unsubOrders) unsubOrders();
+    };
+  }, [user, dispatch]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -70,6 +110,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // اختصرنا اسم "Ana Sayfa Düzeni" في الجوال عشان ما يخرب الشكل
   const navItems = [
     { label: "Dashboard", mobileLabel: "Panel", icon: LayoutDashboard, href: "/admin" },
+    { label: "Siparişler", mobileLabel: "Sipariş", icon: ClipboardList, href: "/admin/orders" },
     { label: "Ürünler", mobileLabel: "Ürünler", icon: Utensils, href: "/admin/menu" },
     { label: "Kategoriler", mobileLabel: "Kategori", icon: Folders, href: "/admin/categories" },
     { label: "Ana Sayfa Düzeni", mobileLabel: "Tasarım", icon: FileText, href: "/admin/landing" },
@@ -110,6 +151,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               >
                 <item.icon className={`w-5 h-5 transition-transform duration-200 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
                 {item.label}
+                {item.href === "/admin/orders" && pendingOrders > 0 && (
+                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {pendingOrders}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -149,8 +195,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     : "text-gray-400 hover:text-gray-600"
                   }`}
               >
-                <div className={`flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${isActive ? "bg-primary/10" : ""}`}>
+                <div className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${isActive ? "bg-primary/10" : ""}`}>
                   <item.icon className={`w-5 h-5 ${isActive ? "scale-110" : ""}`} />
+                  {item.href === "/admin/orders" && pendingOrders > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-1 ring-white">
+                      {pendingOrders}
+                    </span>
+                  )}
                 </div>
                 <span className={`text-[10px] font-semibold tracking-wide ${isActive ? "font-bold" : ""}`}>
                   {item.mobileLabel} {/* استخدمنا الاسم المختصر للجوال */}

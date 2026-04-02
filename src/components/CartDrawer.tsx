@@ -2,7 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCartOpen, updateQuantity, removeFromCart, clearCart } from "@/store/slices/cartSlice";
-import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { X, Minus, Plus, Trash2, ShoppingBag, Loader2, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -12,7 +12,10 @@ export function CartDrawer() {
   const { items, isOpen } = useAppSelector((state) => state.cart);
   const info = useAppSelector((state) => state.restaurant.info);
   const [tableNumber, setTableNumber] = useState("");
+  const [note, setNote] = useState("");
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -29,30 +32,47 @@ export function CartDrawer() {
     }
   }, [isOpen]);
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!tableNumber.trim()) {
       setError(true);
       return;
     }
     setError(false);
+    setLoading(true);
 
-    let message = `*Yeni Sipariş - Masa: ${tableNumber}*\n`;
-    message += `--------------------\n`;
-    items.forEach((item) => {
-      message += `${item.quantity}x ${item.name} (${formatPrice(item.price * item.quantity)})\n`;
-    });
-    message += `--------------------\n`;
-    message += `*Toplam:* ${formatPrice(totalPrice)}`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${info.whatsapp}?text=${encodedMessage}`;
-    
-    // Open WhatsApp
-    window.open(whatsappUrl, "_blank");
-    
-    // Optionally clear cart and close drawer
-    // dispatch(clearCart());
-    // dispatch(setCartOpen(false));
+    try {
+      const { orderService } = await import("@/services/orderService");
+      
+      const orderItems = items.map(i => ({
+        id: i.id,
+        name: i.name,
+        price: i.price,
+        image: i.image || "",
+        quantity: i.quantity
+      }));
+      
+      await orderService.submitOrder({
+        items: orderItems,
+        tableNumber: tableNumber.trim(),
+        note: note.trim(),
+        totalPrice
+      });
+      
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        dispatch(clearCart());
+        dispatch(setCartOpen(false));
+        setTableNumber("");
+        setNote("");
+      }, 3000);
+    } catch (err: any) {
+      console.error("Sipariş gönderilirken hata oluştu:", err);
+      // alert the specific error to help with debugging
+      alert(`Siparişiniz gönderilirken bir hata oluştu: ${err.message || err.code || err}. Lütfen ekran görüntüsü alıp iletin.`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -119,30 +139,54 @@ export function CartDrawer() {
               <span className="text-2xl font-bold font-serif text-primary">{formatPrice(totalPrice)}</span>
             </div>
             
-            <div className="mb-4">
-              <input 
-                type="text" 
-                placeholder="Masa Numarası (Örn: 5)" 
-                value={tableNumber}
-                onChange={(e) => {
-                  setTableNumber(e.target.value);
-                  setError(false);
-                }}
-                className={`w-full px-4 py-2 bg-background border ${error ? 'border-destructive ring-1 ring-destructive' : 'border-border'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
-              />
-              {error && <p className="text-xs text-destructive mt-1 font-medium">Lütfen masa numarasını giriniz.</p>}
-            </div>
+            {success ? (
+              <div className="bg-green-50 text-green-700 p-4 rounded-xl flex flex-col items-center justify-center gap-2 mb-4 animate-in fade-in zoom-in">
+                <CheckCircle2 className="w-8 h-8 text-green-500" />
+                <p className="font-bold text-center">Siparişiniz Alındı!</p>
+                <p className="text-sm text-center">Birazdan hazırlanmaya başlayacak.</p>
+              </div>
+            ) : (
+              <div className="mb-4 space-y-3">
+                <div>
+                  <input 
+                    type="text" 
+                    placeholder="Masa Numarası (Örn: 5)" 
+                    value={tableNumber}
+                    onChange={(e) => {
+                      setTableNumber(e.target.value);
+                      setError(false);
+                    }}
+                    className={`w-full px-4 py-2 bg-background border ${error ? 'border-destructive ring-1 ring-destructive' : 'border-border'} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all`}
+                  />
+                  {error && <p className="text-xs text-destructive mt-1 font-medium">Lütfen masa numarasını giriniz.</p>}
+                </div>
+                <div>
+                  <textarea 
+                    placeholder="Notunuz (İsteğe Bağlı) - Örn: Acısız olsun" 
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            )}
 
-            <button 
-              onClick={handleCheckout}
-              className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3.5 rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-95 text-lg flex justify-center items-center gap-2"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 1.835 6.368L0 24l5.809-1.508A12 12 0 1 0 11.944 0zm6.533 17.062c-.22.613-1.272 1.15-1.745 1.192-.44.04-1.026.115-3.235-.794-2.673-1.097-4.385-3.837-4.516-4.01-.131-.174-1.077-1.429-1.077-2.724 0-1.296.674-1.933.911-2.193.237-.26.514-.325.685-.325.171 0 .342.004.493.012.164.009.385-.065.602.455.275.659.883 2.147.957 2.296.074.15.123.325.025.52-.098.196-.148.316-.296.491-.148.174-.312.373-.445.507-.148.15-.306.315-.135.612.171.296.76 1.258 1.638 2.04.113.1.233.203.364.306 1.023.805 1.956 1.026 2.25 1.15.295.124.47.104.644-.095.174-.203.743-.865.941-1.162.198-.297.396-.247.67-.148.275.1.1738.816 2.035.965.297.15.495.223.57.347.074.124.074.72-.146 1.333z"/></svg>
-              Siparişi Tamamla (WhatsApp)
-            </button>
-            <button onClick={() => dispatch(clearCart())} className="w-full mt-3 py-2 text-sm text-muted-foreground hover:text-destructive font-medium transition-colors">
-              Sepeti Temizle
-            </button>
+            {!success && (
+              <>
+                <button 
+                  onClick={handleCheckout}
+                  disabled={loading}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all hover:scale-[1.02] active:scale-95 text-lg flex justify-center items-center gap-2 disabled:opacity-70 disabled:hover:scale-100 disabled:cursor-not-allowed"
+                >
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+                  {loading ? "Gönderiliyor..." : "Siparişi Gönder"}
+                </button>
+                <button onClick={() => dispatch(clearCart())} className="w-full mt-3 py-2 text-sm text-muted-foreground hover:text-destructive font-medium transition-colors">
+                  Sepeti Temizle
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>
