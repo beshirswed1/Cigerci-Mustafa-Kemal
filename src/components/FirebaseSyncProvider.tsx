@@ -40,6 +40,7 @@ export function FirebaseSyncProvider() {
           ...(data.googleMapsEmbed && { googleMapsEmbed: data.googleMapsEmbed }),
           ...(data.services && { services: data.services }),
           ...(data.socialMedia && { socialMedia: data.socialMedia }),
+          isOrderingEnabled: data.isOrderingEnabled !== false,
         }));
       }
     });

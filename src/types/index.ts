@@ -26,6 +26,7 @@ export interface MenuItem {
   id: string
   name: string
   price: number
+  halfPortionPrice?: number
   description: string
   category: string
   image?: string
@@ -83,6 +84,7 @@ export interface RestaurantInfo {
     youtube?: string
     email?: string
   }
+  isOrderingEnabled?: boolean
 }
 
 // ─── Template-specific config types ──────────────

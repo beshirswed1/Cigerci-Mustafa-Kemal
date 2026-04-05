@@ -38,6 +38,7 @@ export const defaultInfo: RestaurantInfo = {
     youtube: "",
     email: "",
   },
+  isOrderingEnabled: true,
 }
 
 // ─── Hero Section ────────────────────────────────────────

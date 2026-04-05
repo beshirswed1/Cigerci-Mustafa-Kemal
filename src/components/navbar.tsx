@@ -74,19 +74,21 @@ export function Navbar() {
 
         {/* Desktop CTA & Cart */}
         <div className="hidden items-center gap-4 md:flex">
-          <button
-            onClick={() => dispatch(toggleCart())}
-            className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 ${scrolled ? "bg-secondary text-primary hover:bg-primary/20" : "bg-white/20 text-white hover:bg-white/30"
-              }`}
-            aria-label="Sepeti aç"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
-            {totalCartItems > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white shadow ring-2 ring-background">
-                {totalCartItems}
-              </span>
-            )}
-          </button>
+          {info.isOrderingEnabled !== false && (
+            <button
+              onClick={() => dispatch(toggleCart())}
+              className={`relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:scale-110 ${scrolled ? "bg-secondary text-primary hover:bg-primary/20" : "bg-white/20 text-white hover:bg-white/30"
+                }`}
+              aria-label="Sepeti aç"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+              {totalCartItems > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white shadow ring-2 ring-background">
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
+          )}
 
           {map.googleMapsUrl && (
             <a
@@ -113,23 +115,25 @@ export function Navbar() {
 
         {/* Mobile Menu & Cart Toggle */}
         <div className="flex items-center gap-3 md:hidden">
-          <button
-            onClick={() => dispatch(toggleCart())}
-            className="relative flex h-10 w-10 items-center justify-center rounded-lg transition-transform duration-200 active:scale-90"
-            aria-label="Sepeti aç"
-          >
-            <div
-              className="transition-colors duration-300"
-              style={{ color: scrolled ? "var(--foreground)" : "white" }}
+          {info.isOrderingEnabled !== false && (
+            <button
+              onClick={() => dispatch(toggleCart())}
+              className="relative flex h-10 w-10 items-center justify-center rounded-lg transition-transform duration-200 active:scale-90"
+              aria-label="Sepeti aç"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
-            </div>
-            {totalCartItems > 0 && (
-              <span className="absolute 1 top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-white shadow ring-2 ring-background">
-                {totalCartItems}
-              </span>
-            )}
-          </button>
+              <div
+                className="transition-colors duration-300"
+                style={{ color: scrolled ? "var(--foreground)" : "white" }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+              </div>
+              {totalCartItems > 0 && (
+                <span className="absolute 1 top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-white shadow ring-2 ring-background">
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
+          )}
 
           <button
             onClick={() => dispatch(toggleMobileMenu())}

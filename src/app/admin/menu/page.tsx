@@ -33,6 +33,7 @@ export default function AdminMenu() {
   const [formData, setFormData] = useState({
     name: "",
     price: "",
+    halfPortionPrice: "",
     description: "",
     image: "",
     category: "",
@@ -92,6 +93,7 @@ export default function AdminMenu() {
     setFormData({
       name: "",
       price: "",
+      halfPortionPrice: "",
       description: "",
       image: "",
       category: categories[0]?.name || "Ana Yemekler",
@@ -108,9 +110,11 @@ export default function AdminMenu() {
 
   const openEditModal = (item: FirebaseMenuItem) => {
     setEditingId(item.id);
+    const half = (item as FirebaseMenuItem & { halfPortionPrice?: number | null }).halfPortionPrice;
     setFormData({
       ...item,
-      price: item.price.toString()
+      price: item.price.toString(),
+      halfPortionPrice: half != null ? half.toString() : ""
     });
     setIsModalOpen(true);
   };
@@ -137,7 +141,7 @@ export default function AdminMenu() {
         finalImageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80";
       }
 
-      const itemData = {
+      const itemData: Record<string, any> = {
         name: formData.name,
         price: parseFloat(formData.price),
         description: formData.description,
@@ -147,6 +151,11 @@ export default function AdminMenu() {
         isPopular: formData.isPopular,
         isNew: formData.isNew
       };
+      if (formData.halfPortionPrice && formData.halfPortionPrice.trim() !== "") {
+        itemData.halfPortionPrice = parseFloat(formData.halfPortionPrice);
+      } else {
+        itemData.halfPortionPrice = null;
+      }
 
       // REAL DATABASE SAVE (Garantili Kayıt) - Await to ensure we strictly save to connected Firestore!
       if (editingId) {
@@ -353,6 +362,21 @@ export default function AdminMenu() {
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Fiyat (₺) <span className="text-red-500">*</span></label>
                     <input required type="number" step="0.5" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} placeholder="0.00" className="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Yarım Porsiyon Fiyatı (₺)
+                      <span className="ml-2 text-xs font-normal text-gray-400">— İsteğe bağlı</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={formData.halfPortionPrice}
+                      onChange={e => setFormData({ ...formData, halfPortionPrice: e.target.value })}
+                      placeholder="Yoksa boş bırakın"
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2.5 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
+                    />
+                    <p className="text-xs text-gray-400 mt-1.5">Doldurunca menü kartında &quot;Y/₺...&quot; olarak görünür.</p>
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1">Kategori Seçimi <span className="text-red-500">*</span></label>
